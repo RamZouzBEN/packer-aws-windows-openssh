@@ -1,0 +1,112 @@
+name: packer-windows-ami
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - "aws-windows-ssh.pkr.hcl"
+      - "files/**"
+      - ".github/workflows/packer-build-windows.yml"
+  workflow_dispatch:
+    inputs:
+      packer_file:
+        description: "Chemin du fichier Packer (*.pkr.hcl)"
+        required: true
+        default: "aws-windows-ssh.pkr.hcl"
+      packer_vars:
+        description: 'Extra vars Packer (ex: -var "k=v" -var-file=vars.pkr.hcl)'
+        required: false
+        default: ""
+      aws_region:
+        description: "AWS Region"
+        required: true
+        default: "eu-west-1"
+
+permissions:
+  id-token: write     # OIDC
+  contents: read
+
+env:
+  PACKER_LOG: "1"
+  ANSIBLE_HOST_KEY_CHECKING: "False"
+  PIP_BREAK_SYSTEM_PACKAGES: "1"
+
+concurrency:
+  group: packer-windows-ami-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ github.event.inputs.aws_region || 'eu-west-1' }}
+
+      - name: Setup Packer
+        uses: hashicorp/setup-packer@v3
+        with:
+          version: "latest"
+
+      - name: Cache Packer plugins
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.config/packer/plugins
+            ./.packer.d/plugins
+          key: packer-${{ runner.os }}-${{ hashFiles('**/*.pkr.hcl') }}
+          restore-keys: |
+            packer-${{ runner.os }}-
+
+      - name: (Optionnel) Installer Ansible si utilisé par Packer
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install "ansible>=9" "jinja2>=3.1"
+          # installe les collections si un requirements.yml existe
+          if [ -f packer/ansible/requirements.yml ]; then
+            ansible-galaxy install -r packer/ansible/requirements.yml
+          fi
+
+      - name: Validate Packer
+        run: |
+          FILE="${{ github.event.inputs.packer_file || 'aws-windows-ssh.pkr.hcl' }}"
+          echo "Validating $FILE"
+          packer init "$(dirname "$FILE")" || packer init .
+          packer validate "$FILE"
+
+      - name: Build AMI (Windows + SSH + UserData)
+        id: build
+        shell: bash
+        run: |
+          set -euo pipefail
+          FILE="${{ github.event.inputs.packer_file || 'aws-windows-ssh.pkr.hcl' }}"
+          EXTRA="${{ github.event.inputs.packer_vars }}"
+          echo "Building with file: $FILE"
+          echo "Extra vars: $EXTRA"
+          # ajoute quelques tags utiles côté AMI
+          packer build \
+            -var "git_commit=${GITHUB_SHA}" \
+            -var "git_ref=${GITHUB_REF_NAME}" \
+            $EXTRA \
+            "$FILE" | tee packer-build.log
+
+          # Export manifest s'il existe
+          if [ -f packer-manifest.json ]; then
+            echo "manifest=packer-manifest.json" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Upload artifacts (logs & manifest)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: packer-windows-output
+          path: |
+            packer-build.log
+            packer-manifest.json
+          if-no-files-found: ignore
