@@ -42,12 +42,21 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Debug OIDC availability
+        run: |
+        echo "ID token requested: $ACTIONS_ID_TOKEN_REQUEST_TOKEN"  # devrait être vide (sécurité)
+        echo "URL present? ${ACTIONS_ID_TOKEN_REQUEST_URL:+yes}"    # doit afficher "yes" si OIDC dispo
 
+      
       - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: ${{ github.event.inputs.aws_region || 'eu-west-1' }}
+          
+      - name: WhoAmI (STS)
+        run: aws sts get-caller-identity
+
 
       - name: Setup Packer
         uses: hashicorp/setup-packer@v3
