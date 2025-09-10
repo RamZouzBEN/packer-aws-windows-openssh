@@ -101,11 +101,7 @@ jobs:
           echo "Building with file: $FILE"
           echo "Extra vars: $EXTRA"
           # ajoute quelques tags utiles côté AMI
-          packer build \
-            -var "git_commit=${GITHUB_SHA}" \
-            -var "git_ref=${GITHUB_REF_NAME}" \
-            $EXTRA \
-            "$FILE" | tee packer-build.log
+          packer build $EXTRA "$FILE" | tee packer-build.log
 
           # Export manifest s'il existe
           if [ -f packer-manifest.json ]; then
