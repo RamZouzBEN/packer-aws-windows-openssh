@@ -82,7 +82,6 @@ jobs:
           if [ -f packer/ansible/requirements.yml ]; then
             ansible-galaxy install -r packer/ansible/requirements.yml
           fi
-
       - name: Validate Packer
         run: |
           FILE="${{ github.event.inputs.packer_file || 'aws-windows-ssh.pkr.hcl' }}"
