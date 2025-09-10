@@ -60,12 +60,3 @@
   - name: Reboot a machine that takes time to settle after being booted
     ansible.windows.win_reboot:
       post_reboot_delay: 120
-
-  - name: Disable Domain firewall
-    win_firewall:
-      state: disabled
-      profiles:
-      - Domain
-      - Private
-      - Public
-      tags: disable_firewall
