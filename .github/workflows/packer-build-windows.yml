@@ -61,7 +61,7 @@ jobs:
          env | grep ^AWS_ | sort | sed -E 's/(AWS_ACCESS_KEY_ID|AWS_SECRET_ACCESS_KEY|AWS_SESSION_TOKEN)=.*/\1=***MASKED***/'
       
       - name: Setup Packer
-        uses: hashicorp/setup-packer@v4
+        uses: hashicorp/setup-packer@v3
         with:
           version: "latest"
 
