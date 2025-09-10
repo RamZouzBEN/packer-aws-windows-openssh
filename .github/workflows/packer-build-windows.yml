@@ -59,8 +59,8 @@ jobs:
           aws-region: ${{ github.event.inputs.aws_region || 'eu-west-1' }}
 
       - name: Show AWS env presence (masked)
-  run: |
-    env | grep ^AWS_ | sort | sed -E 's/(AWS_ACCESS_KEY_ID|AWS_SECRET_ACCESS_KEY|AWS_SESSION_TOKEN)=.*/\1=***MASKED***/'
+        run: |
+         env | grep ^AWS_ | sort | sed -E 's/(AWS_ACCESS_KEY_ID|AWS_SECRET_ACCESS_KEY|AWS_SESSION_TOKEN)=.*/\1=***MASKED***/'
       - name: Setup Packer
         uses: hashicorp/setup-packer@v3
         with:
