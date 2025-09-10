@@ -1,22 +1,11 @@
 packer {
   required_plugins {
-    amazon = {
-      source  = "github.com/hashicorp/amazon"
-      version = ">= 1"
-    }
-    
-    ansible = {
-    version = ">= 1.0.0"
-    source  = "github.com/hashicorp/ansible"
-    }
-    
-    
-    windows-update = {
-      version = ">= 0.15.0"
-      source  = "github.com/rgl/windows-update"
-    }
+    amazon         = { source = "github.com/hashicorp/amazon",         version = "1.4.0" }
+    ansible        = { source = "github.com/hashicorp/ansible",        version = "1.1.4" }
+    windows-update = { source = "github.com/rgl/windows-update",       version = "0.16.2" } # si nécessaire
   }
 }
+
 
 variable "ami_name_prefix" {
   type    = string
