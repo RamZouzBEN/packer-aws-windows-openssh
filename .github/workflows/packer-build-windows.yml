@@ -30,6 +30,8 @@ env:
   PACKER_LOG: "1"
   ANSIBLE_HOST_KEY_CHECKING: "False"
   PIP_BREAK_SYSTEM_PACKAGES: "1"
+  PACKER_GITHUB_API_TOKEN: ${{ github.token }}   # <= important
+
 
 concurrency:
   group: packer-windows-ami-${{ github.ref }}
