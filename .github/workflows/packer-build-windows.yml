@@ -48,10 +48,6 @@ jobs:
           echo "ID token requested: $ACTIONS_ID_TOKEN_REQUEST_TOKEN"  # devrait être vide (sécurité)
           echo "URL present? ${ACTIONS_ID_TOKEN_REQUEST_URL:+yes}"    # doit afficher "yes" si OIDC dispo
 
-      - name: WhoAmI (STS)
-        run: aws sts get-caller-identity
-
-
       - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
         with:
