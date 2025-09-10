@@ -49,9 +49,9 @@ source "amazon-ebs" "aws-windows-ssh" {
   communicator                = "ssh"
   spot_price                  = "auto"
   iam_instance_profile        = "HRSPRINT-INSTANCE-PROFILE"
-  vpc_id                      = "vpc-06a48dd0b1b4909de"
-  subnet_id                   = "subnet-08893aa34a22f3975"
-  security_group_id           = "sg-0fef2fb0f059935cc"
+  vpc_id                      = "vpc-0a370323017b4462d"
+  subnet_id                   = "subnet-02da2db96a6b063ac"
+  security_group_id           = "sg-067d2714bf88d136b"
   spot_instance_types         = ["c7i.large", "c7a.large", "c6i.large", "c6a.large", "c5a.large", "m6a.large", "m5a.large", "m5.large"]
   winrm_timeout               = "10m"
   ssh_username                = "Administrator"
@@ -91,28 +91,6 @@ build {
 provisioner "powershell" {
   inline = ["New-Item -ItemType Directory -Path C://Exploitation"]
 }
-
-provisioner "file" {
-    source = "files/TMSensorAgent_Windows_x86_64.zip"
-    destination = "c://Exploitation//TMSensorAgent_Windows_x86_64.zip"
-  }
-
-provisioner "file" {
-    source = "files/Microsoft-Windows-Server-Language-Pack_x64_fr-fr.cab"
-    destination = "c://Exploitation//Microsoft-Windows-Server-Language-Pack_x64_fr-fr.cab"
-  }
-
-
-provisioner "file" {
-    source = "files/ImageSetupTool.zip"
-    destination = "c://Exploitation//ImageSetupTool.zip"
-  }
-
-provisioner "file" {
-    source = "files/hrsprintcert.pfx"
-    destination = "c://Exploitation//hrsprintcert.pfx"
-  }
-
 
 provisioner "ansible" {
 playbook_file = "files/playbook.yaml"
