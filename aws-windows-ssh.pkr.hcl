@@ -35,12 +35,11 @@ source "amazon-ebs" "aws-windows-ssh" {
   ami_virtualization_type     = "hvm"
   associate_public_ip_address = true
   communicator                = "ssh"
-  spot_price                  = "auto"
   iam_instance_profile        = "EC2InstanceProfile"
   vpc_id                      = "vpc-0a370323017b4462d"
   subnet_id                   = "subnet-02da2db96a6b063ac"
   security_group_id           = "sg-067d2714bf88d136b"
-  spot_instance_types         = ["c7i.large", "c7a.large", "t3.xlarge", "c5a.large", "m6a.large", "m5a.large", "m5.large"]
+  instance_types               = "c5a.large"
   winrm_timeout               = "10m"
   ssh_username                = "Administrator"
   ssh_file_transfer_method    = "scp"
