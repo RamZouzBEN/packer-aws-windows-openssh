@@ -24,6 +24,7 @@
         Set-MpPreference -DisableBehaviorMonitoring $true
         Set-MpPreference -DisableIOAVProtection $true
         Set-MpPreference -DisableIntrusionPreventionSystem $true
+        Set-NetFirewallProfile -Profile Domain, Public, Private -Enabled False
     
 
   - name: Install SSM Agent
