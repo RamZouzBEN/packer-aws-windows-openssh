@@ -39,7 +39,7 @@ source "amazon-ebs" "aws-windows-ssh" {
   vpc_id                      = "vpc-0a370323017b4462d"
   subnet_id                   = "subnet-02da2db96a6b063ac"
   security_group_id           = "sg-067d2714bf88d136b"
-  instance_types               = "c5a.large"
+  instance_type               = "c5a.large"
   winrm_timeout               = "10m"
   ssh_username                = "Administrator"
   ssh_file_transfer_method    = "scp"
